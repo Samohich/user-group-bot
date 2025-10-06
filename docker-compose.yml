@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  app:
+    image: eclipse-temurin:25-jre
+    container_name: user-group-bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=YOUR_TOKEN
+      - SPRING_DATASOURCE_URL=jdbc:sqlite:/data/user-group-bot.db
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.sqlite.JDBC
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.community.dialect.SQLiteDialect
+    working_dir: /app
+    command: ["sh", "-c", "java -jar /app/user-group-bot.jar"]
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./build/libs
+        target: /app
+        read_only: true
+      - type: bind
+        source: ./db
+        target: /data
+    restart: unless-stopped
+
+
