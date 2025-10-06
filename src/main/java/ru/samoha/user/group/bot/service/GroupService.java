@@ -12,6 +12,11 @@ import ru.samoha.user.group.bot.repository.ChatRepository;
 import ru.samoha.user.group.bot.repository.GroupMemberRepository;
 import ru.samoha.user.group.bot.repository.GroupRepository;
 
+/**
+ * Доменный сервис для работы с группами и их участниками.
+ * Выполняет операции создания групп, добавления и удаления участников,
+ * а также выборки по чату и группе.
+ */
 @Service
 @RequiredArgsConstructor
 public class GroupService {
@@ -19,11 +24,13 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
 
+    /** Проверяет, существует ли группа с данным именем в чате. */
     @Transactional(readOnly = true)
     public boolean existGroup(Long chatId, String groupName) {
         return groupRepository.findByChatIdAndName(chatId, groupName).isPresent();
     }
 
+    /** Создаёт группу в чате, при необходимости создаёт запись о чате. */
     @Transactional
     public void createGroup(Long chatId, String groupName) {
         ChatEntity chat = chatRepository.findById(chatId).orElseGet(() -> {
@@ -39,6 +46,7 @@ public class GroupService {
         groupRepository.save(group);
     }
 
+    /** Добавляет участника в группу. Повторы игнорируются. */
     @Transactional
     public void addMemberToGroup(Long chatId, String groupName, String username, String displayName) {
         GroupEntity group = groupRepository.findByChatIdAndName(chatId, groupName)
@@ -58,6 +66,7 @@ public class GroupService {
         groupMemberRepository.save(member);
     }
 
+    /** Удаляет участника из конкретной группы. */
     @Transactional
     public boolean removeMemberFromGroup(Long chatId, String groupName, String username) {
         GroupEntity group = groupRepository.findByChatIdAndName(chatId, groupName).orElse(null);
@@ -71,18 +80,21 @@ public class GroupService {
         return affected > 0;
     }
 
+    /** Удаляет участника из всех групп чата. */
     @Transactional
-    public boolean removeMemberAllGrops(Long chatId, String ignoredGroupName, String username) {
+    public boolean removeMemberAllGroups(Long chatId, String ignoredGroupName, String username) {
         int affected = groupMemberRepository.deleteByChatIdAndUsername(chatId, normalizeUsername(username));
 
         return affected > 0;
     }
 
+    /** Возвращает список имён групп чата. */
     @Transactional(readOnly = true)
     public List<String> listGroupNames(Long chatId) {
         return groupRepository.findAllNamesByChatId(chatId);
     }
 
+    /** Возвращает участников указанной группы. */
     @Transactional(readOnly = true)
     public List<GroupMemberEntity> getMembers(Long chatId, String groupName) {
         GroupEntity group = groupRepository.findByChatIdAndName(chatId, groupName)
@@ -91,11 +103,13 @@ public class GroupService {
         return groupMemberRepository.findAllByGroupId(group.getId());
     }
 
+    /** Возвращает все группы чата. */
     @Transactional(readOnly = true)
     public List<GroupEntity> listGroup(Long chatId) {
         return groupRepository.findAllByChatId(chatId);
     }
 
+    /** Нормализует username: убирает '@', тримминг, нижний регистр. */
     private String normalizeUsername(String username) {
         if (username == null) {
             return null;

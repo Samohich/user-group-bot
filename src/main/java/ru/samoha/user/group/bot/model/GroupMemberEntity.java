@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Сущность участника группы. Уникален в связке (group_id, username).
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.samoha.user.group.bot.model.GroupEntity;
 
+/**
+ * Репозиторий групп.
+ */
 public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
     @Query("select g from GroupEntity g where g.chat.id = :chatId and g.name = :name")
     Optional<GroupEntity> findByChatIdAndName(@Param("chatId") Long chatId, @Param("name") String name);

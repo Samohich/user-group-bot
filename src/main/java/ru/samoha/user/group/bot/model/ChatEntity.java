@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Сущность чата Telegram. Хранит идентификатор чата и используется
+ * как владелец групп. Один чат — много групп.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

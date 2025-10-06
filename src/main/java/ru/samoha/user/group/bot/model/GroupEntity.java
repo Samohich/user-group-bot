@@ -7,6 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Сущность группы пользователей в рамках одного чата.
+ * Имя группы уникально в пределах чата.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

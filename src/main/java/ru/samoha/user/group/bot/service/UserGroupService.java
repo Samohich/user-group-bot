@@ -17,6 +17,10 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import ru.samoha.user.group.bot.model.GroupEntity;
 import ru.samoha.user.group.bot.model.GroupMemberEntity;
 
+/**
+ * Прикладной сервис, который исполняет сценарии, вызываемые из обработчика бота.
+ * Содержит операции создания групп, управления участниками и отправки сообщений.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class UserGroupService {
     private final TelegramClient client;
     private final GroupService groupService;
 
+    /** Создаёт группу в текущем чате. */
     public void addGroup(Message message, String groupName) {
         if (groupService.existGroup(message.getChatId(), groupName)) {
             sendMessage(message.getChatId(), message.getMessageId(), "Группа '" + groupName + "' уже существует.");
@@ -33,6 +38,7 @@ public class UserGroupService {
         sendMessage(message.getChatId(), message.getMessageId(), "Группа '" + groupName + "' создана.");
     }
 
+    /** Добавляет пользователей (упомянутых в сообщении) в группу. */
     public void addUser(Message message, String groupName) {
         List<MessageEntity> entities = message.getEntities();
         List<AddedUser> usersToAdd = new ArrayList<>();
@@ -73,6 +79,7 @@ public class UserGroupService {
         sendMessage(message.getChatId(), message.getMessageId(), String.format("Пользователь добавлен в группу '%s'.", groupName));
     }
 
+    /** Удаляет пользователей из указной группы или из всех групп, если группа не существует. */
     public void deleteUser(Message message, String groupName) {
         List<MessageEntity> entities = message.getEntities();
         boolean removedAny = false;
@@ -117,6 +124,7 @@ public class UserGroupService {
         }
     }
 
+    /** Отправляет список групп текущего чата. */
     public void listGroups(Message message) {
         List<String> groups = groupService.listGroupNames(message.getChatId());
         if (groups.isEmpty()) {
@@ -130,6 +138,7 @@ public class UserGroupService {
         }
     }
 
+    /** Отправляет список участников указанной группы. */
     public void listUsers(Message message, String groupName) {
         List<GroupMemberEntity> members = groupService.getMembers(message.getChatId(), groupName);
         if (members.isEmpty()) {
@@ -144,6 +153,7 @@ public class UserGroupService {
         }
     }
 
+    /** Отправляет краткую справку по командам. */
     public void sendHelpMessage(Message message) {
         String help = """
                 Доступные команды:
@@ -157,6 +167,9 @@ public class UserGroupService {
         sendMessage(message.getChatId(), message.getMessageId(), help);
     }
 
+    /**
+     * Собирает участников для упомянутых групп и отправляет @упоминания одним сообщением.
+     */
     public void notifyUser(Long chatId, Integer replyMessageId, Set<String> potencialGroups) {
         List<GroupEntity> groups = groupService.listGroup(chatId);
         Set<String> mentions = new HashSet<>();
@@ -181,6 +194,7 @@ public class UserGroupService {
         sendMessage(chatId, replyMessageId, String.join(" ", mentions));
     }
 
+    /** Отправляет ответное сообщение в чат. */
     public void sendMessage(Long chatId, Integer replyMessageId, String text) {
         SendMessage msg = SendMessage.builder()
                 .chatId(chatId)
@@ -200,7 +214,7 @@ public class UserGroupService {
             return groupService.removeMemberFromGroup(chatId, groupName, userName);
         }
 
-        return groupService.removeMemberAllGrops(chatId, groupName, userName);
+        return groupService.removeMemberAllGroups(chatId, groupName, userName);
     }
 
     private record AddedUser(String username, String displayName) {

@@ -14,6 +14,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.samoha.user.group.bot.service.UserGroupService;
 
+/**
+ * Основной обработчик Telegram-бота.
+ * <p>
+ * Принимает входящие обновления, различает команды и обычные сообщения,
+ * делегирует работу в {@link UserGroupService}.
+ */
 @Component
 @RequiredArgsConstructor
 public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
@@ -24,21 +30,34 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
 
     private final UserGroupService userGroupService;
 
+    /**
+     * Токен бота, используемый стартером для регистрации бота.
+     */
     @Override
     public String getBotToken() {
         return botToken;
     }
 
+    /**
+     * Возвращает consumer обновлений для Long Polling.
+     */
     @Override
     public LongPollingUpdateConsumer getUpdatesConsumer() {
         return this;
     }
 
+    /**
+     * Точка входа для входящих обновлений.
+     * Выполняет обработку в виртуальном потоке.
+     */
     @Override
     public void consume(Update update) {
         EXECUTOR.submit(() -> handleUpdate(update));
     }
 
+    /**
+     * Разбирает Update, направляет либо на обработку команды, либо обычного сообщения.
+     */
     private void handleUpdate(Update update) {
         if (update == null || !update.hasMessage()) {
             return;
@@ -59,6 +78,9 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
         }
     }
 
+    /**
+     * Обработка команд бота.
+     */
     private void handleCommand(Message message) {
         String text = message.getText();
         String[] parts = text.split("\\s+");
@@ -87,6 +109,9 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
         }
     }
 
+    /**
+     * Обработка обычных сообщений — ищем @<group> и уведомляем участников.
+     */
     private void handleRegularMessage(Message message) {
         String text = message.getText();
 
@@ -106,6 +131,9 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
         userGroupService.notifyUser(message.getChatId(), message.getMessageId(), potencialGroups);
     }
 
+    /**
+     * Нормализуем имя группы: без '@', в нижнем регистре, без пробелов.
+     */
     private String normalizeGroupName(String name) {
         return name.replace("@", "").trim().toLowerCase();
     }
