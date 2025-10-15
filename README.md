@@ -11,7 +11,7 @@
 ## Требования
 - Java 25
 - Gradle 8+
-- Telegram Bot Token (ВАЖНО! в настройках бота необходимо выдать разрешение Allow Groups)
+- Telegram Bot Token (ВАЖНО! в настройках бота необходимо выключить Group Privacy)
 
 ![img.png](img.png)
 
