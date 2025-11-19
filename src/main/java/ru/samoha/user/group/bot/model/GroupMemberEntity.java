@@ -30,5 +30,3 @@ public class GroupMemberEntity {
     @Column(name = "display_name", nullable = false, length = 128)
     private String displayName;
 }
-
-

@@ -28,6 +28,9 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
     @Value("${telegram.bot.token}")
     private String botToken;
 
+    @Value("${telegram.bot.name}")
+    private String botName;
+
     private final UserGroupService userGroupService;
 
     /**
@@ -82,7 +85,7 @@ public class TelegramBotHandler implements SpringLongPollingBot, LongPollingSing
      * Обработка команд бота.
      */
     private void handleCommand(Message message) {
-        String text = message.getText();
+        String text = message.getText().replace(botName, "").trim();
         String[] parts = text.split("\\s+");
         String command = parts[0].toLowerCase();
 

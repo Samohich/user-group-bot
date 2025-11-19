@@ -29,5 +29,3 @@ public interface GroupMemberRepository extends JpaRepository<GroupMemberEntity, 
     @Query("delete from GroupMemberEntity m where m.group.chat.id = :chatId and m.username = :username")
     int deleteByChatIdAndUsername(@Param("chatId") Long chatId, @Param("username") String username);
 }
-
-

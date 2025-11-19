@@ -33,5 +33,3 @@ public class GroupEntity {
     @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GroupMemberEntity> members = new ArrayList<>();
 }
-
-

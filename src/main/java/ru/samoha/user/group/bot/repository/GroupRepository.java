@@ -20,5 +20,3 @@ public interface GroupRepository extends JpaRepository<GroupEntity, Long> {
     @Query("select g.name from GroupEntity g where g.chat.id = :chatId order by g.name")
     List<String> findAllNamesByChatId(@Param("chatId") Long chatId);
 }
-
-

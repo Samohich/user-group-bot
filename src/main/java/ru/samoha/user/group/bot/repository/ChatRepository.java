@@ -8,5 +8,3 @@ import ru.samoha.user.group.bot.model.ChatEntity;
  */
 public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
 }
-
-
