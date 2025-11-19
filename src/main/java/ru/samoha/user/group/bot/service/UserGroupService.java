@@ -32,6 +32,7 @@ public class UserGroupService {
     public void addGroup(Message message, String groupName) {
         if (groupService.existGroup(message.getChatId(), groupName)) {
             sendMessage(message.getChatId(), message.getMessageId(), "Группа '" + groupName + "' уже существует.");
+            return;
         }
 
         groupService.createGroup(message.getChatId(), groupName);
